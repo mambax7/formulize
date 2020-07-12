@@ -1,0 +1,37 @@
+NOTE: this file is applicable to Formulize 3.1 as well. --Freeform Solutions, June 4, 2009
+
+Formulize 3.0 and WF-Downloads
+
+October 11, 2008
+
+First of all, know that in the near future there should be a release of WF-Downloads that is natively compatibile with Formulize 3.0, and you can ignore this file.
+
+However, until then, there are a few changes you will have to make to your WF-Downloads module, in order for it to work with Formulize 3.0.  We changed lots in Formulize 3.0, and kept backwards compatibility almost everywhere, except in a couple places where the data structure is just too different.
+
+So, in the WF-Downloads files submit.php and admin/index.php, you need to change the following lines wherever they exist (line numbers will vary depending on your exact version of WFD):
+
+//old:
+$owner = getEntryOwner($entries[$fid][0]);
+$owner = getEntryOwner($entry);
+
+//new:
+$owner = getEntryOwner($entries[$fid][0], $fid);
+$owner = getEntryOwner($entry, $fid);
+
+In class/download.php, it's a bit more complicated:
+
+//old:
+deleteFormEntries(array($download->getVar("formulize_idreq")));
+
+//new:
+$category_handler = xoops_getmodulehandler('category');
+$category = $category_handler->get($download->getVar('cid'));
+deleteFormEntries(array($download->getVar("formulize_idreq")), $category->getVar('formulize_fid'));
+
+Last thing...there is a new global preference in Formulize to turn off the security token system for Formulize forms.  Use that preference to turn it off.  WF-Downloads will check the tokens, so you don't need Formulize to do it as well (in fact it causes an error if Formulize tries to).  This does turn off the token for all Formulize forms, not just WF-Downloads ones.  If you are concerned about the implications, please post on our support forums at http://www.freeformsolutions.ca/formulize and we are happy to discuss the particulars of your situation and offer workarounds.  A future Formulize release will address this more fully.
+
+That's it, if you make those changes, everything should work fine, fingers crossed.  Please post at http://www.freeformsolutions.ca/formulize if you run into trouble.
+
+Thanks for using Formulize!
+
+--The Freeform Solutions Team
